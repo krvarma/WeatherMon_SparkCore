@@ -1,7 +1,7 @@
 Spark Core Weather Monitor using BMP085, DHT22, TSL2561 and Sound Sensor
 ------------------------------------------------------------------------
 
-A beginner level sample application to monitor weather. The sample uses BMP085, DHT22, TSL2561 and a low cost Sound Sensor. The application reports Temperature, Humidity, Altitude, Dew Point, Luminosity and Sound Level and uses BMP085. DHT22, TSL2561 and a low cost Sound Sensor. The application publishes events in every 1 minute.
+A beginner level sample application to monitor weather. The application reports Temperature, Humidity, Altitude, Dew Point, Luminosity and Sound Level and uses BMP085. DHT22, TSL2561 and a low cost Sound Sensor. The application publishes events in every 1 minute.
 
 ###Wiring###
  1. TSL2561 Vcc to 3.3V
