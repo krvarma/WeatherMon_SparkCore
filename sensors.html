@@ -1,0 +1,242 @@
+﻿<html lang="en" ng-app="greenhouse">
+<head>
+	<meta charset="utf-8">
+    <style>
+        .body {
+            text-align: center;
+            background-color: #F3F3F3;
+        }
+        .container {
+            width:auto;
+            height:auto;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .caption {
+            font-size: 20px;
+            padding: 3px;
+            color: white;
+            font-weight: bolder;
+            float:right;
+        }
+        .sensorvalue{
+            font-style: normal;
+            font-family: Verdana;
+            font-size: 20px;
+            font-weight: bolder;
+            padding:2px;
+        }
+        .sensorunit {
+            font-size: 12px;
+            font-weight: normal;
+            padding: 2px;
+        }
+        .captionstyle {
+            margin: 10px;
+            width: auto;
+            height: auto;
+            border: 1px solid lightgray;
+            background: lightgray;
+            text-align: center;
+            font-style: normal;
+            font-family: Verdana;
+            font-size: 20px;
+            min-width:150px;
+            padding:4px;
+        }
+        .sensorstyle {
+            margin: 10px;
+            width: auto;
+            height: auto;
+            border: 1px solid white;
+            background: white;
+            text-align: left;
+            font-style: normal;
+            font-family: Verdana;
+            font-size: 20px;
+            min-width:200px;
+            padding:4px;
+        }
+        .input-group {
+            margin-top: 15px;
+        }
+        .inputtable {
+            width: auto;
+            height: auto;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .tablecolumn {
+            width: auto;
+            height: auto;
+        }
+        .connectbutton {
+            margin: 0;
+            padding: 5px 5px;
+            font: inherit;
+            line-height: 20px;
+        }
+        .inputlabel {
+            font-weight: bold;
+            padding: 5px 5px;
+            color: #444;
+            border: 1px solid #d4d4d4;
+            line-height: 20px;
+            text-align: center;
+            cursor: pointer;
+        }
+        .inputfield {
+            padding: 5px 5px;
+            border: 1px solid #d4d4d4;
+            line-height: 20px;
+        }
+        .core-info{
+            
+        }
+    </style>
+
+    <script>
+        var sensors = [];
+        var sensorCount = 0;
+        var columnCount = 3;
+        var container;
+        var processing = false;
+
+        function getContainer(id) {
+            var container = document.createElement("tr");
+
+            container.setAttribute("id", "rowcontainer" + id);
+
+            return container;
+        }
+
+        function getItem(id, name, value, unit) {
+            var container = getContainer(id);
+            var captionitem = document.createElement("td");
+            var sensoritem = document.createElement("td");
+
+            var caption = document.createElement("div");
+            var sensorvalue = document.createElement("div");
+
+            caption.setAttribute("class", "caption");
+            caption.innerHTML = name;
+
+            captionitem.setAttribute("id", "sensor" + id);
+            captionitem.setAttribute("class", "captionstyle");
+            captionitem.appendChild(caption);
+
+            sensorvalue.setAttribute("id", name);
+            sensorvalue.innerHTML = "<span class=\"sensorvalue\">" + value + "</span>" +
+                                    "<span class=\"sensorunit\">" + unit + "</span>";
+
+            sensoritem.setAttribute("class", "sensorstyle");
+            sensoritem.appendChild(sensorvalue);
+
+            container.appendChild(captionitem);
+            container.appendChild(sensoritem);
+
+            return container;
+        }
+        function findSensor(name){
+            var ret = -1;
+
+            for (index = 0; index < sensors.length; ++index) {
+                if(sensors[index].Name.localeCompare(name) == 0){
+                    ret = index;
+
+                    break;
+                }
+            }
+
+            return ret;
+        }
+
+        function insertSensor(name, value){
+            var valuedata = value.split("|");
+            var index = findSensor(name);
+
+            if (-1 == index) {
+                var div = getItem(sensorCount, name, valuedata[0], valuedata[1]);
+
+                sensors.push({ Name: name, Value: valuedata[0], Unit: valuedata[1], Div: div });
+
+                console.log("Adding " + name + "...");
+
+                document.getElementById("container").appendChild(div);
+
+                ++sensorCount;
+            }
+            else {
+                document.getElementById(sensors[index].Name).innerHTML = "<span class=\"sensorvalue\">" + valuedata[0] + "</span>" +
+                                                                         "<span class=\"sensorunit\">" + valuedata[1] + "</span>";
+            }
+        }
+
+        function start(deviceID, accessToken, eventname) {
+            var eventSource = new EventSource("https://api.spark.io/v1/devices/" + deviceID + "/events/?access_token=" + accessToken);
+
+            eventSource.addEventListener('open', function(e) { console.log("Opened!"); },false);
+            eventSource.addEventListener('error', function(e) { console.log("Errored!"); },false);
+
+            eventSource.addEventListener(eventname, function (e) {
+                if (!processing) {
+                    processing = true;
+
+                    var parsedData = JSON.parse(e.data);
+                    var rawdata = parsedData.data.split(",");
+                    var length = rawdata.length;
+                    
+                    for (i = 0; i < length; i++) {
+                        var data = rawdata[i].split("=");
+
+                        console.log(data[0] + " = " + data[1] + " (" + i + ")");
+
+                        insertSensor(data[0], data[1]);
+                    }
+
+                    document.getElementById("core-info").innerHTML = "Last updated at " + parsedData.published_at;
+
+                    processing = false;
+                }
+            }, false);
+        }
+
+        function subscribe() {
+            start(document.getElementById("core-id").value, document.getElementById("api-token").value, document.getElementById("eventname").value);
+
+            document.getElementById("core-id").disabled = true;
+            document.getElementById("api-token").disabled = true;
+            document.getElementById("subscribe").disabled = true;
+
+            document.getElementById("core-info").innerHTML = "Waiting for data...";
+        }
+    </script>
+</head>
+
+<body class="body">
+    <h1>Spark Core Weather Monitor</h1>
+    <br />
+    <div id="core-info" class="core-info">
+        <div id="core-credentials">
+            <form action="javascript:subscribe();" autocomplete="on">
+                <table class="inputtable">
+                    <tr>
+                        <td class="tablecolumn"><label for="core-id" class="inputlabel">Core ID</label><input type="text" class="inputfield" id="core-id" placeholder="Core ID" size="32" required/></td>
+                        <td class="tablecolumn"><label for="api-token" class="inputlabel">Access Token</label><input type="text" class="inputfield" id="api-token" placeholder="API Token" size="32" required/></td>
+                        <td class="tablecolumn"><label for="eventname" class="inputlabel">Event Name</label><input type="text" class="inputfield" id="eventname" placeholder="Event name" size="32" required/></td>
+                        <td class="connectbutton"><input type="submit" id="subscribe" value="Subscribe to Events" class="connectbutton"/></td>
+                    </tr>
+                </table>
+            </form>
+        </div>
+        <div id="event-info" style="display:none">
+            <div>Waiting for data...</div>
+        </div>
+    </div>
+    <hr style="background:#d4d4d4; border:0; height:1px; width:60%" />
+    <br />
+    <table id="container" class="container">
+        
+    </table>
+</body>
+</html>
