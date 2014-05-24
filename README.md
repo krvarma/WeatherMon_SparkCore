@@ -28,4 +28,15 @@ Load the sample application into the Spark Core. Open the ***weathermon.html***,
 
 There are two separate modules in this sample, Spark Core application and HTML page to view the published events. The Spark Core application publishes events in the form *sensor name=sensor value|unit*. The HTML page uses JavaScript to parse the event data and display values from the sensor. The HTML page first asks Core ID and Access Token and uses this to subscribe to the events.
 
+**Screenshots**
+
+*Initial page asking Core ID and Access Token*
+![enter image description here][2]
+
+*Sensor display*
+![enter image description here][3]
+
+
   [1]: https://raw.githubusercontent.com/krvarma/WeatherMon_SparkCore/master/IMG_0064.JPG
+  [2]: https://raw.githubusercontent.com/krvarma/WeatherMon_SparkCore/master/coreid.png
+  [3]: https://raw.githubusercontent.com/krvarma/WeatherMon_SparkCore/master/weather.png
