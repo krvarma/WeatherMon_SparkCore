@@ -202,7 +202,7 @@
         }
 
         function subscribe() {
-            start(document.getElementById("core-id").value, document.getElementById("api-token").value, document.getElementById("eventname").value);
+            start(document.getElementById("core-id").value, document.getElementById("api-token").value, "weatherinfo");
 
             document.getElementById("core-id").disabled = true;
             document.getElementById("api-token").disabled = true;
@@ -223,7 +223,6 @@
                     <tr>
                         <td class="tablecolumn"><label for="core-id" class="inputlabel">Core ID</label><input type="text" class="inputfield" id="core-id" placeholder="Core ID" size="32" required/></td>
                         <td class="tablecolumn"><label for="api-token" class="inputlabel">Access Token</label><input type="text" class="inputfield" id="api-token" placeholder="API Token" size="32" required/></td>
-                        <td class="tablecolumn"><label for="eventname" class="inputlabel">Event Name</label><input type="text" class="inputfield" id="eventname" placeholder="Event name" size="32" required/></td>
                         <td class="connectbutton"><input type="submit" id="subscribe" value="Subscribe to Events" class="connectbutton"/></td>
                     </tr>
                 </table>
