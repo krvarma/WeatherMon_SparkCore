@@ -26,4 +26,6 @@ A beginner level sample application to monitor weather. The sample uses BMP085, 
 ###How to run the application###
 Load the sample application into the Spark Core. Open the ***weathermon.html***, enter Core ID, Access Token, Event Name and press *Subscribe to Events* button.
 
+There are two separate modules in this sample, Spark Core application and HTML page to view the published events. The Spark Core application publishes events in the form *sensor name=sensor value|unit*. The HTML page uses JavaScript to parse the event data and display values from the sensor. The HTML page first asks Core ID and Access Token and uses this to subscribe to the events.
+
   [1]: https://raw.githubusercontent.com/krvarma/WeatherMon_SparkCore/master/IMG_0064.JPG
